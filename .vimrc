@@ -30,3 +30,6 @@ map  <C-t> :term<CR>
 map  <C-h> :tabp<CR>
 map  <C-n> :tabnew<CR>
 let g:NERDTreeQuitOnOpen = 1
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+hi Pmenu ctermfg=white ctermbg=black gui=NONE guifg=white guibg=black
