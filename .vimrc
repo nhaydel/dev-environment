@@ -2,8 +2,11 @@ set number
 
 call plug#begin()
 Plug 'preservim/NERDTree'
+" Requires adapter installs:
+" :VimspectorInstall debugpy - for python
+" :VimspectorInstall delve - for go
+" :VimspectorInstall CodeLLDB
 Plug 'puremourning/vimspector'
-Plug 'davidhalter/jedi-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rust-lang/rust.vim'
 Plug 'dense-analysis/ale'
@@ -26,6 +29,7 @@ nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
 nnoremap <space> :NERDTreeToggle<CR>
 inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
 map  <C-l> :tabn<CR>
+map  <C-c> :tabc<CR>
 map  <C-t> :term<CR>
 map  <C-h> :tabp<CR>
 map  <C-n> :tabnew<CR>
@@ -33,3 +37,9 @@ let g:NERDTreeQuitOnOpen = 1
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 hi Pmenu ctermfg=white ctermbg=black gui=NONE guifg=white guibg=black
+set pastetoggle=<F3>
+
+nmap <F5> <Plug>VimspectorToggleBreakpoint
+nmap <F6> <Plug>VimspectorContinue
+nmap <F7> <Plug>VimspectorStop
+nmap <C-k> <Plug>VimspectorStepInto
