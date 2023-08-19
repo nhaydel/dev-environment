@@ -9,6 +9,7 @@ Plug 'preservim/NERDTree'
 Plug 'puremourning/vimspector'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rust-lang/rust.vim'
+Plug 'voidekh/kyotonight.vim'
 Plug 'dense-analysis/ale'
 Plug 'vim-airline/vim-airline'
 Plug 'guns/vim-clojure-highlight'
@@ -39,7 +40,15 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
 hi Pmenu ctermfg=white ctermbg=black gui=NONE guifg=white guibg=black
 set pastetoggle=<F3>
 
-nmap <F5> <Plug>VimspectorToggleBreakpoint
-nmap <F6> <Plug>VimspectorContinue
-nmap <F7> <Plug>VimspectorStop
-nmap <C-k> <Plug>VimspectorStepInto
+set termguicolors
+let g:vimspector_enable_mappings = 'HUMAN'
+let g:kyotonight_bold = 1
+let g:kyotonight_underline = 1
+let g:kyotonight_italic = 0
+let g:kyotonight_italic_comments = 0
+let g:kyotonight_uniform_status_lines = 0
+let g:kyotonight_cursor_line_number_background = 0
+let g:kyotonight_uniform_diff_background = 0
+let g:kyotonight_lualine_bold = 1
+
+colorscheme kyotonight

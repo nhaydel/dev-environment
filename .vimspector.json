@@ -1,0 +1,77 @@
+{
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
+  "adapters": {
+    "python-remote-docker": {
+      "variables": {
+        "port": "8765"
+      },
+      "port": "${port}",
+      "launch": {
+        "remote": {
+          "container": "${ContainerID}",
+          "runCommand": [
+            "python3", "-m", "debugpy", "--listen", "0.0.0.0:${port}",
+                                        "--wait-for-client",
+                                        "%CMD%"
+          ]
+        },
+        "delay": "5000m"
+      }
+    }
+  },
+  "configurations": {
+    "docker-attach": {
+      "adapter": "python-remote-docker",
+      "remote-cmdLine": [ "/root/main.py" ],
+      "remote-request": "launch",
+      "configuration": {
+        "request": "attach",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/root"
+          }
+        ]
+      }
+    },
+    "run": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${file}",
+        "stopOnEntry": false,
+        "console": "integratedTerminal",
+	"filetypes": ["py"]
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "Y",
+          "userUnhandled": ""
+        }
+      }
+    },
+    "run-test-file": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "module": "pytest",
+	"args": ["${file}"],
+        "stopOnEntry": false,
+        "console": "integratedTerminal",
+	"filetypes": ["py"]
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "N",
+          "userUnhandled": "N"
+        }
+      }
+    }
+  }
+}
