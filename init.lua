@@ -41,7 +41,7 @@ P.S. You can delete this when you're done too. It's your config now :)
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
+vim.g.vimspector_enable_mappings='HUMAN'
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -66,7 +66,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
-  'mfussenegger/nvim-dap',
+  "puremourning/vimspector",
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -116,7 +116,7 @@ require('lazy').setup({
     "themercorp/themer.lua",
         config = function()
 	      require("themer").setup({
-	          colorscheme = "shado",
+	          colorscheme = "tokyonight",
             remaps = {
              palette = {
               shado = {
@@ -319,7 +319,7 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
-vim.keymap.set('n', '<leader>b',  require('dap').toggle_breakpoint, { desc = 'Toggle [B]reakpoint' })
+vim.keymap.set('n', '<leader>vt', ":call vimspector#ToggleBreakpoint()<cr>", { desc = 'Toggle [B]reakpoint' })
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
@@ -394,7 +394,11 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnos
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 vim.keymap.set('n', '<leader><leader>', ":NvimTreeToggle<CR>")
-
+vim.keymap.set('n', '<leader>bp', ":NvimTreeToggle<CR>")
+vim.keymap.set('n', '<leader><leader>', ":NvimTreeToggle<CR>")
+vim.keymap.set('n', '<leader><leader>', ":NvimTreeToggle<CR>")
+vim.keymap.set('n', '<leader><leader>', ":NvimTreeToggle<CR>")
+vim.keymap.set('n', '<leader><leader>', ":NvimTreeToggle<CR>")
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
@@ -433,13 +437,12 @@ local on_attach = function(_, bufnr)
   nmap('<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, '[W]orkspace [L]ist Folders')
-
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
 end
-
+vim.api.nvim_set_hl(0, 'LineNr', { fg = "#ffffff"} )
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -450,7 +453,7 @@ local servers = {
   gopls = {},
   pyright = {},
   rust_analyzer = {},
-  -- tsserver = {},
+  tsserver = {},
 
   lua_ls = {
     Lua = {
@@ -541,56 +544,3 @@ cmp.setup {
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 etc
 --
--- Debugger Config
-local dap = require 'dap'
-dap.adapters.python = function(cb, config)
-  if config.request == 'attach' then
-    ---@diagnostic disable-next-line: undefined-field
-    local port = (config.connect or config).port
-    ---@diagnostic disable-next-line: undefined-field
-    local host = (config.connect or config).host or '127.0.0.1'
-    cb({
-      type = 'server',
-      port = assert(port, '`connect.port` is required for a python `attach` configuration'),
-      host = host,
-      options = {
-        source_filetype = 'python',
-      },
-    })
-  else
-    cb({
-      type = 'executable',
-      command = '.venv/bin/python',
-      args = { '-m', 'debugpy.adapter' },
-      options = {
-        source_filetype = 'python',
-      },
-    })
-  end
-end
-
-dap.configurations.python = {
-  {
-    -- The first three options are required by nvim-dap
-    type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
-    request = 'launch';
-    name = "Launch file";
-    mode = "debug";
-    -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
-
-    program = "${file}"; -- This configuration will launch the current file if used.
-    pythonPath = function()
-      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
-      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-      local cwd = vim.fn.getcwd()
-      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-        return cwd .. '/venv/bin/python'
-      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-        return cwd .. '/.venv/bin/python'
-      else
-        return '/usr/bin/python'
-      end
-    end;
-  },
-}
